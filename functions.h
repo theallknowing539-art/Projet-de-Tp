@@ -38,6 +38,13 @@ void entrerStock(int ref, int quant) {
     if(f == NULL) {
         printf("error opening files");
     }
+    time_t now;
+    
+    struct tm *t;
+
+    time(&now);               
+    t = localtime(&now);
+
 
     while (fread(&p, sizeof(Produit), 1, f) == 1) {
         if (p.reference == ref) {
@@ -51,8 +58,7 @@ void entrerStock(int ref, int quant) {
             m.stock_apres = p.quantite + quant;
             
             // Set date using the lib time.h
-            printf("Entrez la date (JJ/MM/AAAA) : ");
-            scanf("%s", m.date);
+            strftime(m.date, sizeof(m.date), "%d/%m/%Y", t);
 
             // Update the Product struct
             p.quantite = m.stock_apres;

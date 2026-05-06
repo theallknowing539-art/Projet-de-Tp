@@ -160,6 +160,7 @@ void entrerStock(int ref, int quant) {
 }
 
 //walidAfficherStock
+
 void afficherStock() {
     FILE *f = fopen("stock.dat", "rb");
     FILE *m = fopen("mouvements.dat", "rb");

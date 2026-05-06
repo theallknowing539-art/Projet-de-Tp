@@ -28,6 +28,77 @@ int stock_apres ;
 } Mouvement ;
 //functions
 
+void addProduct() {
+    FILE *f;
+    Produit p;
+    Produit temp;
+    Mouvement m;
+    int existe = 0;
+
+    time_t now;
+    struct tm *t;
+    time(&now);
+    t = localtime(&now);
+
+    // Get product information from user 
+    printf("Reference : ");
+    scanf("%d", &p.reference);
+
+    printf("Designation : ");
+    scanf(" %[^\n]", p.designation);
+
+    printf("Quantite initiale : ");
+    scanf("%d", &p.quantite);
+
+    printf("Seuil d'alerte : ");
+    scanf("%d", &p.seuil_alerte);
+
+    strcpy(p.derniere_operation, "Initial");
+
+    //Check if reference already exists in stock.dat 
+    f = fopen("stock.dat", "rb");
+    if (f != NULL) {
+        while (fread(&temp, sizeof(Produit), 1, f) == 1) {
+            if (temp.reference == p.reference) {
+                existe = 1;
+                break;
+            }
+        }
+        fclose(f);
+    }
+
+    if (existe) {
+        printf("Error: reference %d existe deja.\n", p.reference);
+        return;
+    }
+
+    //Write new product to stock.dat 
+    f = fopen("stock.dat", "ab");
+    if (f == NULL) {
+        printf("error opening files");
+        return;
+    }
+    fwrite(&p, sizeof(Produit), 1, f);
+    fclose(f);
+
+    // Build and write movement entry to mouvements.dat 
+    m.reference = p.reference;
+    strcpy(m.operation, "Ajout");
+    m.quantite_concernee = p.quantite;
+    m.stock_avant = 0;
+    m.stock_apres = p.quantite;
+    strftime(m.date, sizeof(m.date), "%d/%m/%Y", t);
+
+    FILE *fJournal = fopen("mouvements.dat", "ab");
+    if (fJournal != NULL) {
+        fwrite(&m, sizeof(Mouvement), 1, fJournal);
+        fclose(fJournal);
+    }
+
+    printf("Produit ajouté avec succés.\n");
+}
+
+
 void entrerStock(int ref, int quant) {
     FILE *f = fopen("stock.dat","r+b");
     bool found;

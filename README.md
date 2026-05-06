@@ -1,2 +1,2 @@
 # Projet-de-Tp
-This project aims to program a system that tracks items in a real life repository and to track movement of these items accross various repos
+This inventory management system was developed for the Algorithmics and C Programming course. The objective is to manage a product inventory through binary file handling while maintaining full traceability of operations via an automated movement journal.

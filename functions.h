@@ -28,7 +28,7 @@ int stock_apres ;
 } Mouvement ;
 //functions
 
-void addProduct() {
+void addProduct(int ref, int quant) {
     FILE *f;
     Produit p;
     Produit temp;
@@ -41,15 +41,16 @@ void addProduct() {
     t = localtime(&now);
 
     // Get product information from user 
-    printf("Reference : ");
-    scanf("%d", &p.reference);
+    // printf("Reference : ");
+    // scanf("%d", &p.reference);
+    p.reference = ref;
 
     printf("Designation : ");
     scanf(" %[^\n]", p.designation);
 
-    printf("Quantite initiale : ");
-    scanf("%d", &p.quantite);
-
+    // printf("Quantite initiale : ");
+    // scanf("%d", &p.quantite);
+    p.quantite = quant;
     printf("Seuil d'alerte : ");
     scanf("%d", &p.seuil_alerte);
 
@@ -57,6 +58,11 @@ void addProduct() {
 
     //Check if reference already exists in stock.dat 
     f = fopen("stock.dat", "rb");
+    //error check 0
+       if (f == NULL) {
+        printf("error opening files");
+        return;
+    }
     if (f != NULL) {
         while (fread(&temp, sizeof(Produit), 1, f) == 1) {
             if (temp.reference == p.reference) {
@@ -74,6 +80,8 @@ void addProduct() {
 
     //Write new product to stock.dat 
     f = fopen("stock.dat", "ab");
+    //error check 1
+
     if (f == NULL) {
         printf("error opening files");
         return;
@@ -100,53 +108,46 @@ void addProduct() {
 
 
 void entrerStock(int ref, int quant) {
-    FILE *f = fopen("stock.dat","r+b");
-    bool found;
+    FILE *f = fopen("stock.dat", "r+b"); // Open in update mode
+    int found = 0; // Initialized to avoid garbage memory
     Produit p;
     Mouvement m;
 
-
-    if(f == NULL) {
-        printf("error opening files");
+    if (f == NULL) {
+        printf("Error: stock.dat could not be opened.\n");
+        return; 
     }
-    time_t now;
-    
-    struct tm *t;
 
+    time_t now;
+    struct tm *t;
     time(&now);               
     t = localtime(&now);
 
-
-    while (fread(&p, sizeof(Produit), 1, f) == 1) {
+    while (fread(&p, sizeof(Produit), 1, f) == 1) { // Process one record at a time
         if (p.reference == ref) {
             found = 1;
 
-            // Prepare Movement data for the journal
             m.reference = ref;
-            strcpy(m.operation, "Ajout");
+            strcpy(m.operation, "Ajout"); 
             m.quantite_concernee = quant;
             m.stock_avant = p.quantite;
             m.stock_apres = p.quantite + quant;
             
-            // Set date using the lib time.h
             strftime(m.date, sizeof(m.date), "%d/%m/%Y", t);
 
-            // Update the Product struct
             p.quantite = m.stock_apres;
-            strcpy(p.derniere_operation, "Ajout");
+            strcpy(p.derniere_operation, "Ajout"); 
 
-            // Move pointer back to overwrite this specific record
-            fseek(f, -sizeof(Produit), SEEK_CUR);
+            fseek(f, -sizeof(Produit), SEEK_CUR); // Move back to the record start
             fwrite(&p, sizeof(Produit), 1, f);
 
-            // Write to movements.dat
-            FILE *fJournal = fopen("mouvements.dat", "ab");
+            FILE *fJournal = fopen("mouvements.dat", "ab"); // Link to journal
             if (fJournal != NULL) {
                 fwrite(&m, sizeof(Mouvement), 1, fJournal);
                 fclose(fJournal);
             }
 
-            printf("Stock mis a jour et mouvement enregistre.\n");
+            printf("Stock mis a jour.\n");
             break; 
         }
     }
@@ -155,7 +156,7 @@ void entrerStock(int ref, int quant) {
         printf("Erreur : Reference %d introuvable.\n", ref);
     }
 
-    fclose(f);
+    fclose(f); 
 }
 
 

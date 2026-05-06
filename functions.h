@@ -159,4 +159,41 @@ void entrerStock(int ref, int quant) {
     fclose(f); 
 }
 
+//walidAfficherStock
+void afficherStock() {
+    FILE *f = fopen("stock.dat", "rb");
+    FILE *m = fopen("mouvements.dat", "rb");
+
+    Produit p;
+    Mouvement mv;
+
+    if (f == NULL) {
+        printf("Stock vide\n");
+        return;
+    }
+
+    while (fread(&p, sizeof(p), 1, f)) {
+
+        int count = 0;
+
+        if (m != NULL) {
+            rewind(m);
+            while (fread(&mv, sizeof(mv), 1, m)) {
+                if (mv.reference == p.reference) {
+                    count++;
+                }
+            }
+        }
+
+        printf("\nRef: %d\n", p.reference);
+        printf("Nom: %s\n", p.designation);
+        printf("Qte: %d\n", p.quantite);
+        printf("Derniere op: %s\n", p.derniere_operation);
+        printf("Nb mouvements: %d\n", count);
+    }
+
+    fclose(f);
+    if (m != NULL) fclose(m);
+}
+
 

@@ -198,3 +198,79 @@ void afficherStock() {
 }
 
 
+//Ayoub 
+void sortirStock(int ref,int quant) {
+    FILE *f = fopen("stock.dat", "rb+"); // to open stock file
+    FILE *m = fopen("mouvements.dat", "ab"); // to open journal file
+
+    Produit p;
+    Mouvement mv;
+
+    // int ref, qte;
+
+    printf("Donner la reference: ");
+    scanf("%d", &ref);
+
+    // to search for the product in file
+    while (fread(&p, sizeof(p), 1, f)) {
+
+        if (p.reference == ref) {
+
+            // printf("Donner la quantite a retirer: ");
+            // scanf("%d", &qte);
+            
+
+            // to check if enough stock
+            if (quant > p.quantite) {
+                printf("Stock insuffisant\n");
+                fclose(f);
+                fclose(m);
+                return;
+            }
+
+            // to save old quantity
+            mv.stock_avant = p.quantite;
+
+            // to update stock
+            p.quantite = p.quantite - quant;
+
+            // to update last operation
+            strcpy(p.derniere_operation, "Retrait");
+
+            // to go back in file to overwrite product
+            fseek(f, -sizeof(p), SEEK_CUR);
+            fwrite(&p, sizeof(p), 1, f);
+
+            // to fill movement info
+            printf("Donner la date: ");
+            scanf("%s", mv.date);
+
+            mv.reference = ref;
+            strcpy(mv.operation, "Retrait");
+            mv.quantite_concernee = quant;
+            mv.stock_apres = p.quantite;
+
+            // to write movement in journal
+            fwrite(&mv, sizeof(mv), 1, m);
+
+            // to check if stock is under seuil
+            if (p.quantite < p.seuil_alerte) {
+                printf("ALERTE: stock sous le seuil\n");
+            }
+
+            printf("Operation faite\n");
+
+            fclose(f);
+            fclose(m);
+            return;
+        }
+    }
+
+    // to handle case where product not found
+    printf("Produit non trouve\n");
+
+    fclose(f);
+    fclose(m);
+}
+
+

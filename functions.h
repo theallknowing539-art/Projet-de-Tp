@@ -8,9 +8,9 @@
 #include <stdbool.h>
 #include <time.h>
 
-// ======================
+
 // Structures
-// ======================
+
 
 typedef struct {
     int reference;
@@ -29,9 +29,9 @@ typedef struct {
     int stock_apres;
 } Mouvement;
 
-// ======================
+
 // Function Prototypes
-// ======================
+
 
 void addProduct(int ref, int quant);
 

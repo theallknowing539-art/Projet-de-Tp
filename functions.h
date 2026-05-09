@@ -274,3 +274,39 @@ void sortirStock(int ref,int quant) {
 }
 
 
+//islem consulter journal 
+void consulterJournal() {
+    FILE *f = fopen("mouvements.dat", "rb");
+    if (f == NULL) {
+        printf("Erreur : Impossible d'ouvrir le journal des mouvements.\n");
+        return;
+    }
+
+    Mouvement m;
+    int count = 0;
+
+    printf("\n========== JOURNAL DES MOUVEMENTS ==========\n");
+    printf("%-12s %-10s %-10s %-18s %-12s %-12s\n",
+           "Date", "Reference", "Operation", "Quantite concernee", "Stock avant", "Stock apres");
+    printf("---------------------------------------------------------------------\n");
+
+    while (fread(&m, sizeof(Mouvement), 1, f) == 1) {
+        printf("%-12s %-10d %-10s %-18d %-12d %-12d\n",
+               m.date,
+               m.reference,
+               m.operation,
+               m.quantite_concernee,
+               m.stock_avant,
+               m.stock_apres);
+        count++;
+    }
+
+    if (count == 0) {
+        printf("Aucun mouvement enregistre.\n");
+    } else {
+        printf("---------------------------------------------------------------------\n");
+        printf("Total : %d mouvement(s) affiche(s).\n", count);
+    }
+
+    fclose(f);
+}

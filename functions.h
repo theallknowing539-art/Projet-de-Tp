@@ -1,31 +1,50 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
-#include<stdbool.h>
+
+#ifndef FUNCTIONS_H
+#define FUNCTIONS_H
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdbool.h>
 #include <time.h>
 
-//structure declarations
+// ======================
+// Structures
+// ======================
 
-// Structure pour le stock ( fichier binaire )
 typedef struct {
-int reference ;
-char designation [80];
-int quantite ;
-int seuil_alerte ;
-char derniere_operation [20]; // " Ajout " , " Retrait " , " Initial "
-} Produit ;
+    int reference;
+    char designation[80];
+    int quantite;
+    int seuil_alerte;
+    char derniere_operation[20];
+} Produit;
 
-// Structure pour le journal ( fichier binaire )
 typedef struct {
-char date [11];
-// JJ / MM / AAAA
-int reference ;
-char operation [10];
-// " Ajout " ou " Retrait "
-int quantite_concernee ;
-int stock_avant ;
-int stock_apres ;
-} Mouvement ;
+    char date[11];
+    int reference;
+    char operation[10];
+    int quantite_concernee;
+    int stock_avant;
+    int stock_apres;
+} Mouvement;
+
+// ======================
+// Function Prototypes
+// ======================
+
+void addProduct(int ref, int quant);
+
+void entrerStock(int ref, int quant);
+
+void afficherStock(void);
+
+void sortirStock(int ref, int quant);
+
+void consulterJournal(void);
+
+#endif
+
 //functions
 
 void addProduct(int ref, int quant) {
